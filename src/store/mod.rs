@@ -101,14 +101,14 @@ mod tests {
     use std::io::Cursor;
 
     #[test]
-    fn smoke() {
+    fn var_int_smoke() {
         let mut cursor =
             Cursor::new([0x80, 0xA1, 0x20, 0x83, 0x00, 0x00, 0x00, 0x84]);
         assert_eq!(read_var_int(&mut cursor).unwrap(), (161, 2));
     }
 
     #[test]
-    fn extra8() {
+    fn var_int_extra8() {
         let mut cursor =
             Cursor::new([0xfe, 0x05, 0x7a, 0xe9, 0x7f, 0xbe, 0x8b, 0x6c]);
         assert_eq!(read_var_int(&mut cursor).unwrap(), (1542518172715884, 8));
