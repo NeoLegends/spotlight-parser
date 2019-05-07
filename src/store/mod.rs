@@ -69,44 +69,27 @@ pub fn read_var_int(reader: &mut impl Read) -> Result<(u64, u64), Error> {
     // number and counting leading zeros
     let extra = (!num).leading_zeros();
 
-    println!("{}, {}", num, extra);
-
     if extra == 0 {
         return Ok((num as u64, read));
     }
 
-    let use_lower_nibble = match extra {
-        1..=4 => true,
-        _ => false,
-    };
+    let mut result = (1..=extra)
+        .map(|x| (extra - x) * 8)
+        .map(|shift| {
+            reader.read_u8().map(|b| {
+                read += 1;
 
-    println!("ULN {}", use_lower_nibble);
+                (b as u64) << (shift as u64)
+            })
+        })
+        .sum::<Result<u64, _>>()?;
 
-    let num = if use_lower_nibble {
+    // Use lower nibble?
+    if let 1..=4 = extra {
         // Remove n = extra leading ones by shifting
-        (num << extra) >> extra
-    } else {
-        num
-    };
+        let additional = (num << extra) >> extra;
 
-    let mut result: u64 = 0;
-
-    /*for shift in (extra - 1)..=0 {
-      let num = reader.read_u8()?;
-      read += 1;
-
-      result += (num as u64) << (shift * 8);
-    }*/
-
-    for shift in 0..extra {
-        let num_x = reader.read_u8()? as u64;
-        read += 1;
-        result += num_x << ((extra - shift + 1) * 8);
-        println!("{}, res: {}", shift, result)
-    }
-
-    if use_lower_nibble {
-        result += (num as u64) << (extra * 8);
+        result += (additional as u64) << (extra * 8);
     }
 
     Ok((result, read))
