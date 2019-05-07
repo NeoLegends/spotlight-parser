@@ -38,16 +38,14 @@ impl Block for PropertyBlock {
             let prop_type = reader.read_u8()?;
             let (name, len) = reader.read_zero_terminated()?;
 
-            pos += 6 + len + 1;
+            let prop = Property {
+                value_type,
+                prop_type,
+                name,
+            };
+            property_map.insert(index, prop);
 
-            property_map.insert(
-                index,
-                Property {
-                    value_type,
-                    prop_type,
-                    name,
-                },
-            );
+            pos += 6 + len + 1;
         }
 
         Ok(Self { data: property_map })

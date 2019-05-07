@@ -44,18 +44,17 @@ impl Block for CategoryBlock {
 
             let name_parts: Vec<_> = name.split("\u{16}\u{2}").collect();
 
-            pos += 4 + len + 1;
-            category_map.insert(
-                index,
-                Category {
-                    name: name_parts[0].to_owned(),
-                    lang: if name_parts.len() > 1 {
-                        Some(name_parts[1].to_owned())
-                    } else {
-                        None
-                    },
+            let category = Category {
+                name: name_parts[0].to_owned(),
+                lang: if name_parts.len() > 1 {
+                    Some(name_parts[1].to_owned())
+                } else {
+                    None
                 },
-            );
+            };
+            category_map.insert(index, category);
+
+            pos += 4 + len + 1;
         }
 
         Ok(Self { data: category_map })
