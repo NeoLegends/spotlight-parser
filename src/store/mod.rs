@@ -61,7 +61,7 @@ impl Store {
     }
 }
 
-pub fn read_var_int(reader: &mut impl Read) -> Result<(u64, u64), Error> {
+pub fn read_var_int(reader: &mut impl Read) -> Result<(u64, usize), Error> {
     let num = reader.read_u8()?;
     let mut read = 1;
 
